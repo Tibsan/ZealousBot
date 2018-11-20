@@ -1,11 +1,26 @@
 const moment = require('moment');
 
 class Commands {
+	
 	constructor(app) {
 		this.app = app;
+		this.knownDaylies = {
+			"wooden": "Open 10 wooden chests\nMap: North Royal Road (Spawn: xx:00, xx:25, xx:55)",
+			"golden": "Open 3 golden chests\nMap: North Royal Road",
+			"freshwater": "Catch 10 freshwater fish\nMap: Tria (Beginner I)",
+			"foulwater": "Catch 10 foulwater fish\nMap: Evansville (Beginner I)",
+			"lava": "Catch 10 lava fish\nMap: Lavaworks (Beginner IV)",
+			"beasts": "Kill 100 Beasts\nMap: Ellin Grove",
+			"insects": "Kill 100 Insects\nMap: The Deck Skatepark",
+			"undead": "Kill 100 Undead\nMap: Goldus Pharmaceuticals",
+			"divine": "Kill 100 Divine\nMap: Aurora Laboratory",
+			"humanoid": "Kill 100 Humanoid\nMap: Karnif's Fang",
+			"inanimate": "Kill 100 Inanimate\nMap: Slumberland",
+		};
 	}
 
 	commandHandler(msg) {
+		
 		const args = msg.content.slice(this.app.CONFIG.PREFIX.length).trim().split(/ +/g);
 		const command = args.shift().toLowerCase();
 
@@ -83,7 +98,10 @@ class Commands {
 		}
 
 		this.app.methods.checkGuildQuestChannel(msg.guild, () => {
-			const daily = args.join(' ');
+			var daily = args.join(' ');
+			if (args.length == 1 && this.knownDaylies.hasOwnPropperty(args[0])) {
+				daily = this.knownDaylies[args[0]];
+			}
 			const channel = msg.guild.channels.find(channel => channel.name === this.app.CONFIG.DAILYGQ);
 			this.app.methods.truncateChannel(channel, () => {
 				channel.send(`${this.app.util.prettyDate()} Daily guild quest objective: \n${daily}`);
